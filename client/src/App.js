@@ -60,6 +60,10 @@ export default class App extends Component {
   render() {
     return (
       <div className="App">
+        <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet"></link>
+        <div className="logo-container">
+          <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
+        </div>
         <form
           id="url-entry"
           action={this.props.action}
@@ -67,6 +71,7 @@ export default class App extends Component {
           onSubmit={(e) => this.onSubmit(e)}
           className="search-input-container">
           <label>
+            <span className="search-input-description">Search food:</span>
             <input onChange={(e) => this.onChange(e)} type="text" name="searchTerm" className="search-input" /><br/>
           </label>
           <div className="button-container">
