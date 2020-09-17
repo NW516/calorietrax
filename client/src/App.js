@@ -1,33 +1,27 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import './App.css';
 
-export default class App extends Component {
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      searchTerm: '',
-      errorMsg: ''
-    };
+const App = (props) => {
+  let textInput = useRef('');
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleChange = () => {
+    console.log(textInput.current.value);
+    setSearchTerm(textInput.current.value);
   }
 
-  onChange(e) {
-    this.setState({
-      searchTerm: e.target.value
-    });
+  const handleClear = () => {
+    setSearchTerm('');
+    setErrorMsg('');
   }
 
-  handleClear() {
-    this.setState({
-      searchTerm: '',
-      errorMsg: ''
-    });
-  }
-
-  onSubmit(e) {
+  const handleSubmit = (e) => {
       e.preventDefault();
-      fetch(this.props.action, {
-          method: this.props.method,
+      fetch(props.action, {
+          method: props.method,
           credentials: 'same-origin',
           headers: {
               'Accept': 'application/json',
@@ -35,56 +29,52 @@ export default class App extends Component {
               'Access-Control-Allow-Credentials': true,
               'Access-Control-Allow-Origin': true
           },
-          body: JSON.stringify({"searchTerm": this.state.searchTerm})
+          body: JSON.stringify({"searchTerm": searchTerm})
       })
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data === "Invalid URL") {
-          this.setState({errorMsg: data});
+          setErrorMsg(data);
         } else {
-          this.setState({searchTerm: data.searchTerm});
+          setSearchTerm(data.searchTerm);
         }
       });
 
-      this.setState({searchTerm: ''});
-  }
+      setSearchTerm('');
+    }
 
-
-  componentDidMount() {
-    //fetch('/users')
-    //  .then(res => res.json())
-    //  .then(users => this.setState({ users }));
-  }
-
-  render() {
     return (
       <div className="App">
         <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet"></link>
-        <div className="logo-container">
-          <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
-        </div>
         <form
           id="url-entry"
-          action={this.props.action}
-          method={this.props.method}
-          onSubmit={(e) => this.onSubmit(e)}
+          action={props.action}
+          method={props.method}
+          onSubmit={(e) => handleSubmit(e)}
           className="search-input-container">
+
+          <div className="logo-container">
+            <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
+          </div>
+
           <label>
-            <span className="search-input-description">Search food:</span>
-            <input onChange={(e) => this.onChange(e)} type="text" name="searchTerm" className="search-input" /><br/>
+            <span className="search-input-description">Search food:  </span>
+            <input type="text" className="search-input" ref={textInput} onChange={handleChange}/>
           </label>
+
           <div className="button-container">
             <button>Submit</button>
-            <input type="reset" onClick={() => this.handleClear()} value="Clear"/>
+            <input type="reset" onClick={() => handleClear()} value="Clear"/>
           </div>
         </form>
       </div>
     );
   }
-}
 
 App.defaultProps = {
-    action: 'http://localhost:5000/api/genurl',
+    action: 'http://localhost:5000/api/search',
     method: 'post'
 };
+
+export default App;
