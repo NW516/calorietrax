@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import './Autocomplete.css';
+import './App.css';
 
 class Autocomplete extends Component {
   static propTypes = {
@@ -8,7 +9,7 @@ class Autocomplete extends Component {
   };
 
   static defaultProps = {
-    suggestions: []
+    suggestions: [],
   };
 
   constructor(props) {
@@ -25,7 +26,6 @@ class Autocomplete extends Component {
       userInput: ""
     };
   }
-
 
   // Event fired when the input value is changed
   onChange = e => {
@@ -55,9 +55,48 @@ class Autocomplete extends Component {
       activeSuggestion: 0,
       filteredSuggestions: [],
       showSuggestions: false,
-      userInput: e.currentTarget.innerText
-    });
+      userInput: e.currentTarget.innerText    });
   };
+
+  handleClear = () => {
+    this.setState({
+      activeSuggestion: 0,
+      filteredSuggestions: [],
+      showSuggestions: false,
+      userInput: ""
+    });
+  }
+
+  handleSubmit = (e) => {
+
+      e.preventDefault();
+      const params = { q: this.state.userInput };
+      const paramString = new URLSearchParams(params);
+      const formAction = `${this.props.submitAction}?${paramString.toString()}`;
+
+
+
+      fetch(formAction, {
+          method: this.props.method,
+          credentials: 'same-origin',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Credentials': true,
+              'Access-Control-Allow-Origin': true
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        var disp = "Display_Name"
+        for (let i=0; i<(data.length); i++) {
+         console.log(data[i][disp]);
+        }
+      });
+
+      this.setState({ userInput: '' });
+  }
 
   // Event fired when the user presses a key down
   onKeyDown = e => {
@@ -95,6 +134,8 @@ class Autocomplete extends Component {
       onChange,
       onClick,
       onKeyDown,
+      handleClear,
+      handleSubmit,
       state: {
         activeSuggestion,
         filteredSuggestions,
@@ -108,7 +149,7 @@ class Autocomplete extends Component {
     if (showSuggestions && userInput) {
       if (filteredSuggestions.length) {
         suggestionsListComponent = (
-          <table class="suggestions">
+          <table className="suggestions"><tbody>
             {filteredSuggestions.map((suggestion, index) => {
               let className;
 
@@ -118,20 +159,21 @@ class Autocomplete extends Component {
               }
 
               return (
-                <tr><td
+                <tr key={suggestion}><td
                   className={className}
                   key={suggestion}
-                  onClick={onClick}
+                  onClick={(e) => onClick(e)}
                 >
                   {suggestion}
                 </td></tr>
               );
             })}
+          </tbody>
           </table>
         );
       } else {
         suggestionsListComponent = (
-          <div class="no-suggestions">
+          <div className="no-suggestions">
             <em>No suggestions, you're on your own!</em>
           </div>
         );
@@ -140,6 +182,26 @@ class Autocomplete extends Component {
 
     return (
       <Fragment>
+
+      <form
+        id="url-entry"
+        action={this.props.submitAction}
+        method={this.props.method}
+        onSubmit={(e) => handleSubmit(e)}
+        className="search-input-container">
+
+        <div className="logo-container">
+          <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
+        </div>
+
+        <span className="subhead">
+        Get the calories, fat, carbs, protein and more for over 37,000 food and drinks.
+        </span>
+
+        <label>
+          <span className="search-input-description">Search food:  </span>
+        </label>
+
         <input
           type="text"
           onChange={onChange}
@@ -148,6 +210,13 @@ class Autocomplete extends Component {
           className="search-input"
         />
         {suggestionsListComponent}
+
+        <div className="button-container">
+          <button>Submit</button>
+          <input type="reset" onClick={() => handleClear()} value="Clear"/>
+        </div>
+      </form>
+
       </Fragment>
     );
   }

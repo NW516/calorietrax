@@ -8,6 +8,7 @@
 
 .logo-container {
   margin-top: 20px;
+  margin-left: 10px;
   margin-bottom: 20px;
 }
 
@@ -21,7 +22,7 @@
   width: 60%;
   height: 100%;
   margin-top: 70px;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .search-input-description {
@@ -34,14 +35,6 @@
   font-style: italic;
   font-family: Impact, sans-serif;
   color: #ffffff;
-}
-
-.search-input {
-    width: 100%;
-    height: 50px;
-    border-radius: .25rem;
-    font-size: 14px;
-    box-sizing: border-box;
 }
 
 .button-container {
@@ -57,23 +50,11 @@
     height: 80px;
   }
 
-  .search-input {
-      width: 70%;
-      height: 40px;
-      font-size: 16px;
-  }
-
 }
 
 @media (min-width: 1200px) {
   .logo {
-    width: 250px;
-    height: 100px;
-  }
-
-  .search-input {
-      width: 70%;
-      height: 50px;
-      font-size: 18px;
+    width: 300px;
+    height: 125px;
   }
 }

@@ -8,7 +8,7 @@ const path = require('path');
 
 // Connect Database
 const connectDB = require('./config/db');
-connectDB();
+//connectDB();
 
 app.use(cors());
 // Initialize JSON body parser
@@ -24,13 +24,9 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/search', require('./routes/search'));
-app.use('/', require('./routes/redirect'));
+app.use('/api/getall', require('./routes/getall'));
 
-// The "catchall": just  React's index.html file.
-//app.get('*', (req, res) => {
-//  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-//});
-//app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', require('./routes/redirect'));
 
 app.use(express.static(path.join(__dirname, '/client/build')))
 
