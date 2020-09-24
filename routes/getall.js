@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const config = require('config');
 
-const Url = require('../model/Url');
-
 router.get('/', async (request, response) => {
   var MongoClient = require('mongodb').MongoClient;
   const config = require('config');
@@ -11,7 +9,7 @@ router.get('/', async (request, response) => {
 
   MongoClient.connect(url, function(err, db) {
     if(err) {
-      console.log("ERROR MSG IS: " + err);
+      // ADD SOMETHING HERE
     } else {
       const dbo = db.db('test');
       dbo.collection('caloriedata').find().toArray(function(error, documents) {

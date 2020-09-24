@@ -7,8 +7,8 @@ const App = (props) => {
   var foodArr = [];
 
   const fetchAll = () => {
-    fetch("http://localhost:5000/api/getall", {
-        method: 'get',
+    fetch(props.initAction, {
+        method: props.method,
         credentials: 'same-origin',
         headers: {
             'Accept': 'application/json',
@@ -19,15 +19,18 @@ const App = (props) => {
     })
     .then(response => response.json())
     .then(data => {
-      if (data === "Invalid URL") {
-        //setErrorMsg(data);
+      if (data.length == 0) {
+        foodArr.push("An error has occurred: Please reload the page");
       } else {
           var disp = "Display_Name"
           for (let i=0; i<(data.length); i++) {
-            console.log(data[i][disp]);
             foodArr.push(data[i][disp]);
           }
       }
+    })
+    .catch(function() {
+      console.log("error");
+      foodArr.push("An error has occurred: Please reload the page" );
     });
 
   };
@@ -37,6 +40,7 @@ const App = (props) => {
   return (
     <div className="App">
       <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet"></link>
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet"></link>
       <Autocomplete
         method={props.method}
         initAction={props.initAction}

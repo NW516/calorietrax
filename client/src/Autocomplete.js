@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import './Autocomplete.css';
-import './App.css';
+import SearchResults from './SearchResults';
 
 class Autocomplete extends Component {
   static propTypes = {
@@ -23,7 +23,11 @@ class Autocomplete extends Component {
       // Whether or not the suggestion list is shown
       showSuggestions: false,
       // What the user has entered
-      userInput: ""
+      userInput: "",
+      // Search results
+      searchResults: "",
+      // Did the user submit their query?
+      submitted: false
     };
   }
 
@@ -63,7 +67,9 @@ class Autocomplete extends Component {
       activeSuggestion: 0,
       filteredSuggestions: [],
       showSuggestions: false,
-      userInput: ""
+      userInput: "",
+      searchResults: "",
+      submitted: false
     });
   }
 
@@ -88,11 +94,32 @@ class Autocomplete extends Component {
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-        var disp = "Display_Name"
-        for (let i=0; i<(data.length); i++) {
-         console.log(data[i][disp]);
+        const wideCol = {
+          width: '38%'
+        };
+        const narrowCol = {
+          width: '20%'
+        };
+
+        this.setState({ submitted: true} )
+        this.setState({ searchResults: data.map(item => {
+            return (
+                    <div className="w3-row w3-border">
+                      <div className="w3-col w3-small" style={wideCol}>{item["Display_Name"]}</div>
+                      <div className="w3-col w3-small" style={narrowCol}>{item["Portion_Amount"]} {item["Portion_Display_Name"]}</div>
+                      <div className="w3-col w3-small" style={narrowCol}>{Math.round(item["Calories"])}</div>
+                      <div className="w3-col w3-small" style={narrowCol}>{Math.round(item["Solid_Fats"])}</div>
+                    </div>
+                  )
+          })
+        })
+        if (data.length === 0) {
+          this.setState({ searchResults: "No results" });
         }
+      }) 
+      .catch(function() {
+        console.log("error");
+        this.setState({ searchResults: "An error has occurred: Please try again." });
       });
 
       this.setState({ userInput: '' });
@@ -116,7 +143,6 @@ class Autocomplete extends Component {
       if (activeSuggestion === 0) {
         return;
       }
-
       this.setState({ activeSuggestion: activeSuggestion - 1 });
     }
     // User pressed the down arrow, increment the index
@@ -182,42 +208,60 @@ class Autocomplete extends Component {
 
     return (
       <Fragment>
-
-      <form
-        id="url-entry"
-        action={this.props.submitAction}
-        method={this.props.method}
-        onSubmit={(e) => handleSubmit(e)}
-        className="search-input-container">
-
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+      <div>
         <div className="logo-container">
-          <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
+            <img src="./Calorie.png" alt="calorie trax logo" className="logo"/>
         </div>
+      </div>
+      <div>
+        <form
+          id="url-entry"
+          action={this.props.submitAction}
+          method={this.props.method}
+          onSubmit={(e) => handleSubmit(e)}
+          className="search-input-container">
 
         <span className="subhead">
-        Get the calories, fat, carbs, protein and more for over 37,000 food and drinks.
+          <p>
+          Get accurate nutritional information-- calories, fat content and more-- for over 1,000 common food and beverage items.
+          </p>
         </span>
-
-        <label>
-          <span className="search-input-description">Search food:  </span>
-        </label>
-
-        <input
-          type="text"
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          value={userInput}
-          className="search-input"
-        />
-        {suggestionsListComponent}
-
-        <div className="button-container">
-          <button>Submit</button>
-          <input type="reset" onClick={() => handleClear()} value="Clear"/>
+        <div className="w3-row">
+          <div className="w3-col s3 l2">
+            <label>
+              <span className="search-input-description">Search food:  </span>
+            </label>
+          </div>
+          <div className="w3-col s6 l4">
+            <input
+              type="text"
+              onChange={onChange}
+              onKeyDown={onKeyDown}
+              value={userInput}
+              className="search-input"
+            />
+            {suggestionsListComponent}
+            <br/>
+            <div className="button-container">
+              <button className="button">Submit</button>
+              <input
+                type="reset"
+                onClick={() => handleClear()}
+                value="Clear"
+              />
+            </div>
+          </div>
         </div>
       </form>
-
-      </Fragment>
+    </div>
+    <div className="w3-row">
+        <SearchResults
+        results={this.state.searchResults}
+        submitted={this.state.submitted}
+        />
+    </div>
+    </Fragment>
     );
   }
 }

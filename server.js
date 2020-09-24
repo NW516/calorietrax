@@ -26,8 +26,6 @@ app.use((req, res, next) => {
 app.use('/api/search', require('./routes/search'));
 app.use('/api/getall', require('./routes/getall'));
 
-app.use('/', require('./routes/redirect'));
-
 app.use(express.static(path.join(__dirname, '/client/build')))
 
 app.get('*', function(req, res) {
