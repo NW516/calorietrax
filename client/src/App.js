@@ -51,8 +51,8 @@ const App = (props) => {
 }
 
 App.defaultProps = {
-    initAction: 'http://localhost:5000/api/getall',
-    submitAction: 'http://localhost:5000/api/search',
+    initAction: '/api/getall',
+    submitAction: '/api/search',
     method: 'get'
 };
 
